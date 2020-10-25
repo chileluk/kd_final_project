@@ -4,6 +4,13 @@ body {
     margin-bottom: 50px;
 }
 
+.expanded-view {
+  width: 80%;
+  margin: auto;
+  display: flex;
+}
+
+
 .dropdown {
     width: 50%;
     margin: auto;
