@@ -1,4 +1,4 @@
-const localEndpoint = "http://192.168.1.5:7200/repositories/ent_ontology"
+const localEndpoint = "http://localhost:7200/repositories/ent_ontology"
 
 
 // QUERIES - video for movie and series
@@ -179,7 +179,7 @@ var rangeSelector = (element, start, end, interval, origin) => {
 var dropdownMenu = (element, options, origin) => {
 	let choices = ""
 	let className = element.replace("#", "")
-	let $select = `<select name="${className}" class="${className} form-control" multiple></select>`
+	let $select = `<select name="${className}" class="${className} dropdown" multiple></select>`
 	$(element).append($select)
 	$.each(options, (i, opt) => {
 		let $item = `<option value=${opt.replace(" ", "").replace("+", "Plus")}>${opt}</option>`
@@ -197,16 +197,18 @@ var dropdownMenu = (element, options, origin) => {
 }
 
 var radioButtons = (element, origin) => {
+    let div1 = `<div class="radio-container"></div>`
 	let $option1 = `<input type="radio" id="English" name="language"></input>`
 	let $label1 = `<label for="English">English only</label>`
 
 	let $option2 = `<input type="radio" id="All" name="language"></input>`
 	let $label2 = `<label for="All">All languages</label>`
 
-	$(element).append($option1)
-	$(element).append($label1)
-	$(element).append($option2)
-	$(element).append($label2)
+    $(element).append(div1)
+	$(".radio-container").append($option1)
+	$(".radio-container").append($label1)
+	$(".radio-container").append($option2)
+	$(".radio-container").append($label2)
 
 	$("#English").change(() => {
 		origin.value = true
@@ -222,25 +224,35 @@ var radioButtons = (element, origin) => {
 }
 
 var viewToggle = (elementId) => {
+    let div1 = `<div class="toggle-radios"></div>`
 	let $option1 = `<input type="radio" checked id="compact" name="toggle"></input>`
 	let $label1 = `<label for="compact">Compact View</label>`
 
 	let $option2 = `<input type="radio" id="expanded" name="toggle"></input>`
 	let $label2 = `<label for="expanded">Expanded View</label>`
 
-	$(elementId).append($option1)
-	$(elementId).append($label1)
-	$(elementId).append($option2)
-	$(elementId).append($label2)
+	$(elementId).append(div1)
+	$(".toggle-radios").append($option1)
+	$(".toggle-radios").append($label1)
+	$(".toggle-radios").append($option2)
+	$(".toggle-radios").append($label2)
 
-	$("#compact").change(() => {
-		// console.log("COMPACT VIEW")
-		$(".expanded-view").hide()
-	})
-	$("#expanded").change(() => {
-		// console.log("EXPANDED VIEW")
-		$(".expanded-view").show()
-	})
+    $(document).on("change", "#compact", function() {
+        $(".expanded-view").hide()
+    })
+
+    $(document).on("change", "#expanded", function() {
+        $(".expanded-view").show()
+    })
+
+	// $("#compact").change(() => {
+	// 	// console.log("COMPACT VIEW")
+	// 	$(".expanded-view").hide()
+	// })
+	// $("#expanded").change(() => {
+	// 	// console.log("EXPANDED VIEW")
+	// 	$(".expanded-view").show()
+	// })
 }
 
 
@@ -259,6 +271,11 @@ $(document).ready(function () {
         $("#preloadBlock").preloader();
         location.reload();
     });
+
+    $("#return-button").click(function (){
+        $("#preloadBlock").preloader();
+        location.reload();
+    })
 
     // view toggle
 	
@@ -327,7 +344,7 @@ $(document).ready(function () {
         $.each(categoryOptions, (option, val) => {
             let filterId = `book-${option}`
             let $container = `<div id="${option}"></div>`;
-            let heading = `<div class="alert alert-success text-center" role="alert">
+            let heading = `<div class="alert alert-success text-center filter-header" role="alert">
 				<h4 class="alert-heading">${option}</h4>
 				<hr>
 				<p class="mb-0">Select ${val.text}</p>
@@ -344,7 +361,7 @@ $(document).ready(function () {
             }
             else if (val.type === "dropdown") {
                 // create a dropdown menu
-                let dropdown = `<div id="${filterId}" class="form-group"></div>`;
+                let dropdown = `<div id="${filterId}" class="dropdown-container"></div>`;
                 $(`#${option}`).append(dropdown)
                 dropdownMenu(`#${filterId}`, val.choices, categoryOptions[option])
             }
@@ -369,7 +386,7 @@ $(document).ready(function () {
         });
 
         $("#search").click(function () {
-            $(".searchBlock").hide();
+            // $(".searchBlock").hide();
             $("#preloadBlock").preloader();
 
             var selectedGenres = "";
@@ -577,7 +594,7 @@ $(document).ready(function () {
 
 							<div class="row justify-content-center row-cols-5">
 								<div class="col mb-4">
-									<div class="resultCard justify-content-center">
+									<div class="resultCard justify-content-center image">
 										<img src="${thumbnail}" class="card-img-top resultImg" alt="...">
 									</div>
 								</div>
@@ -602,7 +619,7 @@ $(document).ready(function () {
 								
 								<div class="col mb-4">
 									<div class="card card-body resultCard justify-content-center">
-										<h5 class=""><rating>${fourthColumn}</rating></h5>
+										<h3 class="">${fourthColumn}</h3>
 									</div>
 									<div class="card-footer text-center font-weight-bold">
 										<p class="card-title">${fourthColumnTitle}</p>
@@ -625,34 +642,32 @@ $(document).ready(function () {
                         if (selectedCategory === "Book") {
                             expandedView = `
 							<div id=${resultId} class="expanded-view">
-								<div>
-									<h4>Plot</h4>
-									<p>${plot}</p>
-									<p>Genres: ${genreLabels}</p>
+								<div class="plot">
+									<p><span>Plot:</span> ${plot}</p>
 								</div>
-								<div>
-									<p>Country: ${country}</p>
+								<div class="details">
+                                    <p><span>Country:</span> ${country}</p>
+                                    <p><span>Genres:</span> ${genreLabels}</p>
 									<a href=${wikipediaLink} target="_blank">More Info</a>
 								</div>
 							</div>`
                         } else {
                             expandedView = `
 							<div id=${resultId} class="expanded-view">
-								<div>
-									<h4>Plot</h4>
-									<p>${plot}</p>
-									<p>Genres: ${genreLabels}</p>
-									<p>Language: ${language}</p>
-									<p>Country: ${country}</p>
+								<div class="plot">
+									<p><span>Plot:</span> ${plot}</p>
+									<p><span>Genres:</span> ${genreLabels}</p>
+									<p><span>Language:</span> ${language}</p>
+									<p><span>Country:</span> ${country}</p>
 								</div>
-								<div>
-									<p id=${resultId + platform.replace(" ", "")}>Available on: ${platform}</p>
-									<p id=${resultId + award.replace(" ", "")}">Won Award: ${award}</p>
-									<p>${actorNames}</p>
+								<div class="details">
+									<p id=${resultId + platform.replace(" ", "")}><span>Available on:</span> ${platform}</p>
+									<p id=${resultId + award.replace(" ", "")}"><span>Won Award:</span> ${award}</p>
+									<p><span>Cast: </span>${actorNames}</p>
 							`
 
                             if (selectedCategory === "Movie") {
-                                expandedView += `<p>Director: ${director}</p>`
+                                expandedView += `<p><span>Director:</span> ${director}</p>`
                             }
 
                             expandedView += `<a href=https://www.imdb.com/title/${imdbID} target="_blank">More Info</a>`
@@ -667,7 +682,8 @@ $(document).ready(function () {
             });
 
             $("#preloadBlock").preloader("remove");
-            $(".searchBlock").hide();
+            // $(".searchBlock").hide();
+            // $("html, body").animate({ scrollTop: $(document).height()/2 }, 1000)
             $(".resultBlock").show();
 
             $(document).on("click", ".preloadResults", function (event) {

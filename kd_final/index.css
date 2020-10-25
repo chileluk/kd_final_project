@@ -4,16 +4,73 @@ body {
     margin-bottom: 50px;
 }
 
+/* #English, 
+#All {
+    margin-right: 4vw;
+} */
+
+.radio-container {
+    width: 90%;
+    margin: auto;
+    padding: 0vh 5vw; 
+}
+
+.toggle-radios {
+    width: 40%;
+    margin: auto; 
+}
+
+.radios label,
+#toggle-container label{
+    margin-left: 0.5vw;
+}
+
+.radios label:nth-of-type(1),
+#toggle-container label:nth-of-type(1){
+    margin-right: 7vw;
+}
+
+.filter-header{
+    margin-top: 10vh;
+}
+
+.dropdown-container,
+.radios{
+    width: 40%; 
+    margin: auto;
+}
+
+.dropdown {
+    width: 100%;
+}
+
+.image img {
+    width: 70%;
+    margin: auto; 
+}
+
+.container.card {
+    margin-top: 10vh;
+    background-color: rgb(58, 145, 216);
+}
+
 .expanded-view {
   width: 80%;
   margin: auto;
   display: flex;
+  justify-content: space-between;
 }
 
+.expanded-view span {
+    font-weight: bold;
+}
 
-.dropdown {
-    width: 50%;
-    margin: auto;
+.plot {
+    width: 70%;
+}
+
+.details {
+    width: 25%;
 }
 
 .image-selector {
