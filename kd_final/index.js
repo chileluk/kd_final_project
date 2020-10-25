@@ -4,10 +4,23 @@ const localEndpoint = "http://localhost:7200/repositories/ent_ontology"
 // QUERIES - video for movie and series
 let videoQuery = (category, genres, options) => {
 
-	let extraOptions = ""
-	extraOptions += options.Language.value ? "VALUES ?lang {ent:English}" : ""
-	extraOptions += options.Platforms.value ? `VALUES ?platforms {${options.Platforms.value}}` : ""
-	extraOptions += options.Awards.value ? `VALUES ?awards {${options.Awards.value}}` : ""
+    let extraOptions = ""
+    extraOptions += options.Language.value ? "VALUES ?lang {ent:English}" : ""
+    extraOptions += options.Platforms.value ? ` VALUES ?platforms {${options.Platforms.value}}` : ""
+
+    let awardOptions = `OPTIONAL { ?entertainment ent:wonAward/rdfs:label ?award. }`
+    if (options.Awards.value) {
+        extraOptions += ` VALUES ?awards {${options.Awards.value}}`
+        awardOptions = `
+        ?entertainment ent:wonAward ?awards.
+        ?awards rdfs:label ?award.
+        `          
+    }
+    
+    let lengthFilter = `xsd:integer(?duration) > ${options.Length.value}`
+    if (category === "Movie") {
+        lengthFilter = `xsd:integer(?duration) < ${options.Length.value}`
+    }
 
 	return `PREFIX ent: <http://www.entertainment.org/entertainment/>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -22,8 +35,10 @@ let videoQuery = (category, genres, options) => {
 		?entertainment a ent:${category};
 			ent:hasGenre ?genre; ent:title ?title; ent:releaseYear ?year; ent:language ?lang;
 			ent:hasRating ?rating; ent:duration ?duration; ent:releaseCountry ?nation;
-			rdfs:comment ?plot; ent:imdbID ?imdbID; ent:imageURL ?poster; ent:hasGenre/rdfs:label ?genreLabel ;
-			ent:availableOn/rdfs:label ?platform; ent:wonAward/rdfs:label ?award  .
+            rdfs:comment ?plot; ent:imdbID ?imdbID; ent:imageURL ?poster; ent:hasGenre/rdfs:label ?genreLabel .
+        ?entertainment ent:availableOn ?platforms .
+        ?platforms rdfs:label ?platform .
+		${awardOptions}
 		OPTIONAL {
 			?entertainment ent:directedBy/ent:name ?director .
         }
@@ -32,7 +47,7 @@ let videoQuery = (category, genres, options) => {
 		?lang rdfs:label ?language .
 		FILTER(xsd:integer(?year) > ${options.Year.value} 
 			&& xsd:double(?rating) > ${options.Rating.value} &&
-			xsd:integer(?duration) > ${options.Length.value}
+			${lengthFilter}
 			)
     }
     GROUP BY ?imdbID ?title ?poster ?year ?language ?rating ?duration ?country ?plot ?platform ?award ?director
@@ -145,17 +160,17 @@ let tvOptions = {
 	Length: { text: "the minimum number of show seasons", type: "slider", start: 1, end: 10, step: 1, value: 0 },
 	Rating: { text: "the minimum viewer rating of the show", type: "slider", start: 1, end: 10, step: 1,  value: 0 },
 	Year: { text: "the minimum release year of the show", type: "slider", start: 1970, end: 2020, step: 10, value: 0 },
-	Platforms: { text: "streaming platforms where the show can be found", type: "dropdown", choices: tvPlatforms, value: "" },
-	Awards: { text: "the awards the show has won", type: "dropdown", choices: tvAwards, value: "" },
-	Language: { text: "the language the show is in", type: "radio", value: false } // true for English only
+	Platforms: { text: "platforms where the show is streaming", type: "dropdown", choices: tvPlatforms, value: "" },
+	Awards: { text: "the awards won by the show", type: "dropdown", choices: tvAwards, value: "" },
+	Language: { text: "the language of the show", type: "radio", value: false } // true for English only
 }
 let movieOptions = {
-	Length: { text: "the minimum runtime of the movie", type: "slider", start: 0, end: 200, step: 20, value: 0 },
+	Length: { text: "the maximum runtime of the movie (in minutes)", type: "slider", start: 60, end: 200, step: 20, value: 300 },
 	Rating: { text: "the minimum viewer rating of the movie", type: "slider", start: 1, end: 10, step: 1, value: 0 },
 	Year: { text: "the minimum release year of the movie", type: "slider", start: 1970, end: 2020, step: 10, value: 0 },
-	Platforms: { text: "streaming platforms where the movie can be found", type: "dropdown", choices: moviePlatforms, value: "" },
-	Awards: { text: "the awards the movie has won", type: "dropdown", choices: movieAwards, value: "" },
-	Language: { text: "the language the movie is in", type: "radio", value: false }
+    Platforms: { text: "platforms where the movie is streaming", type: "dropdown", choices: moviePlatforms, value: "" },
+	Awards: { text: "the awards won by the movie", type: "dropdown", choices: movieAwards, value: "" },
+	Language: { text: "the language of the movie", type: "radio", value: false }
 }
 
 
@@ -179,7 +194,7 @@ var rangeSelector = (element, start, end, interval, origin) => {
 var dropdownMenu = (element, options, origin) => {
 	let choices = ""
 	let className = element.replace("#", "")
-	let $select = `<select name="${className}" class="${className} dropdown" multiple></select>`
+	let $select = `<select name="${className}" class="${className} dropdown"></select>`
 	$(element).append($select)
 	$.each(options, (i, opt) => {
 		let $item = `<option value=${opt.replace(" ", "").replace("+", "Plus")}>${opt}</option>`
@@ -197,18 +212,20 @@ var dropdownMenu = (element, options, origin) => {
 }
 
 var radioButtons = (element, origin) => {
-    let div1 = `<div class="radio-container"></div>`
+    let div1 = `<div id="radio1" class="radio-container"></div>`
 	let $option1 = `<input type="radio" id="English" name="language"></input>`
 	let $label1 = `<label for="English">English only</label>`
 
-	let $option2 = `<input type="radio" id="All" name="language"></input>`
+    let div2 = `<div id="radio2" class="radio-container"></div>`
+	let $option2 = `<input type="radio" id="All" name="language" checked></input>`
 	let $label2 = `<label for="All">All languages</label>`
 
     $(element).append(div1)
-	$(".radio-container").append($option1)
-	$(".radio-container").append($label1)
-	$(".radio-container").append($option2)
-	$(".radio-container").append($label2)
+    $(element).append(div2)
+	$("#radio1").append($option1)
+    $("#radio1").append($label1)
+    $("#radio2").append($option2)
+    $("#radio2").append($label2)
 
 	$("#English").change(() => {
 		origin.value = true
@@ -223,43 +240,11 @@ var radioButtons = (element, origin) => {
 	
 }
 
-var viewToggle = (elementId) => {
-    let div1 = `<div class="toggle-radios"></div>`
-	let $option1 = `<input type="radio" checked id="compact" name="toggle"></input>`
-	let $label1 = `<label for="compact">Compact View</label>`
-
-	let $option2 = `<input type="radio" id="expanded" name="toggle"></input>`
-	let $label2 = `<label for="expanded">Expanded View</label>`
-
-	$(elementId).append(div1)
-	$(".toggle-radios").append($option1)
-	$(".toggle-radios").append($label1)
-	$(".toggle-radios").append($option2)
-	$(".toggle-radios").append($label2)
-
-    $(document).on("change", "#compact", function() {
-        $(".expanded-view").hide()
-    })
-
-    $(document).on("change", "#expanded", function() {
-        $(".expanded-view").show()
-    })
-
-	// $("#compact").change(() => {
-	// 	// console.log("COMPACT VIEW")
-	// 	$(".expanded-view").hide()
-	// })
-	// $("#expanded").change(() => {
-	// 	// console.log("EXPANDED VIEW")
-	// 	$(".expanded-view").show()
-	// })
-}
-
-
-
 
 $(document).ready(function () {
-	
+    
+    // hide button to return to categories
+    $("#return-button").hide()
 
     $(".categorySelector").click(event => {
         $(event.currentTarget)
@@ -267,25 +252,19 @@ $(document).ready(function () {
             .siblings().removeClass("bg-info")
     });
 
-    $("#home").click(function () {
+    $("#home, #return-button").click(function () {
         $("#preloadBlock").preloader();
         location.reload();
+        $("#return-button").hide()
+        $(".jumbotron").show()
     });
 
-    $("#return-button").click(function (){
-        $("#preloadBlock").preloader();
-        location.reload();
+    
+    // expand individual result cards
+    $(document).on("click", ".container.card", function () {
+        let id = $(this).attr("id")
+        $(`#exp-${id}`).slideToggle()
     })
-
-    // view toggle
-	
-
-
-    // $("#checkbox").change(() => {
-    // 	$(".expanded").toggle()
-    // })
-
-    // $(".expanded-view").hide()
 
 
     $(".btn.select-category").click(function () {
@@ -296,6 +275,11 @@ $(document).ready(function () {
 
         // SET the selected Category
         selectedCategory = $(".bg-info").attr("id");
+
+        // hide welcome message
+        $(".jumbotron").hide()
+        $("#return-button").show()
+        
 		
 
         // FILTERS PER CATEGORY
@@ -315,11 +299,13 @@ $(document).ready(function () {
 
 
         // GENRE MENU
-        let heading = `<div class="alert alert-success text-center" role="alert">
-					<h4 class="alert-heading">Genres</h4>
-					<hr>
-					<p class="mb-0">Select at least one genre</p>
-					</div>`
+        let heading = `<div class="alert alert-success text-center genre" role="alert">
+            <h4 class="alert-heading">Genres</h4>
+            <hr>
+            <p class="mb-0">
+                Select at least one ${selectedCategory === "Series" ? "TV Show" : selectedCategory} genre <em><strong>(*required)</strong></em>
+            </p>
+        </div>`
 
         $(".genreHeading").append(heading);
 
@@ -347,7 +333,7 @@ $(document).ready(function () {
             let heading = `<div class="alert alert-success text-center filter-header" role="alert">
 				<h4 class="alert-heading">${option}</h4>
 				<hr>
-				<p class="mb-0">Select ${val.text}</p>
+				<p class="mb-0">Select ${val.text + " <em><strong>(optional)</strong></em>"}</p>
 				</div>`
 			
             $(".searchBlock").append($container)
@@ -375,7 +361,9 @@ $(document).ready(function () {
 
 
         // SEARCH BUTTON CLICK
-        let search = `<button id="search" type="button" class="btn btn-primary select-category">Search</button>`;
+        let search = `<button id="search" type="button" class="btn btn-primary select-category">
+            <a href="#header-${selectedCategory}">Search</a>
+        </button>`;
         $(".search").append(search);
         $("#preloadBlock").preloader("remove");
         $(".basic-options").hide();
@@ -388,6 +376,12 @@ $(document).ready(function () {
         $("#search").click(function () {
             // $(".searchBlock").hide();
             $("#preloadBlock").preloader();
+
+            // hide any previosly shown error message
+            $(".result-message").hide();
+
+            // clear results block in case doing a modified search
+            $(".resultBlock").empty()
 
             var selectedGenres = "";
             let genre;
@@ -441,7 +435,7 @@ $(document).ready(function () {
                     console.error(error);
                     // REQUEST ERR message
                     let resultHeader;
-                    resultHeader = `<div class="alert alert-success text-center" role="alert">
+                    resultHeader = `<div class="alert alert-success text-center result-message" role="alert">
 						<h4 class="alert-heading">Search Results</h4>
 						<hr>
 						<p class="mb-0">Sorry, There was an error during search. Please try again</p>
@@ -454,7 +448,7 @@ $(document).ready(function () {
                     if (results.length === 0) {
                         // No-matching-results message
                         if (genreSet) {
-                            resultHeader = `<div class="alert alert-success text-center" role="alert">
+                            resultHeader = `<div class="alert alert-success text-center result-message" role="alert">
 								<h4 class="alert-heading">Search Results</h4>
 								<hr>
 								<p class="mb-0"> Sorry, the selected search criteria did not return any results. 
@@ -465,7 +459,7 @@ $(document).ready(function () {
                             $(".resultBlock").append(resultHeader);
                         } else {
                             // Genre-not-set message
-                            resultHeader = `<div class="alert alert-success text-center" role="alert">
+                            resultHeader = `<div class="alert alert-success text-center result-message" role="alert">
 								<h4 class="alert-heading">Search Error</h4>
 								<hr>
 								<p class="mb-0">You did not select any genres. Must select at least one genre</p>
@@ -474,19 +468,18 @@ $(document).ready(function () {
                         }
 						
                     } else {
-                        resultHeader = `<div class="alert alert-success text-center" role="alert">
+                        resultHeader = `<div id=header-${selectedCategory} class="result-header alert alert-success text-center" role="alert">
 							<h4 class="alert-heading">Recomended ${resultsLabel}</h4>
 							<hr>
 							<p class="mb-0">You may be interested in the following ${resultsLabel.toLowerCase()}</p>
 						</div>`;
-                        $(".search").hide()
+                        // $(".search").hide()
 
-                        let toggle = `<div id="toggle-container"></div>`
+                        let instruction = `<h5 id="view-instruction">Click on each result to view more details and click again to hide details</h5>`
 
                         $(".resultBlock").append(resultHeader);
-                        $(".resultBlock").append(toggle);
+                        $(".resultBlock").append(instruction);
 
-                        viewToggle("#toggle-container")
                     }
 
                     let imdbIds = ""
@@ -501,10 +494,10 @@ $(document).ready(function () {
                         let plot = row.plot.value;
                         let country = row.country.value;
                         // let genreLabels = row.genreLabels.value.split(",")
-                        let genreLabels = row.genreLabels.value;
+                        let genreLabels = row.genreLabels.value.replace(/,/g, ", ")
                         console.log("LABELS:", genreLabels)
 
-                        let firstGenre = genreLabels.split(",")[0]
+                        let firstGenre = genreLabels.split(", ")[0]
                         console.log("FIRST GENRE:", firstGenre)
                         let genreIcon = genreSelectors[`${firstGenre}`];
 
@@ -554,9 +547,9 @@ $(document).ready(function () {
                             rating = row.rating.value;
                             language = row.language.value;
                             length = row.duration.value;
-                            actorNames = row.actorNames.value.split(",");
+                            actorNames = row.actorNames.value.replace(/,/g, ", ")
                             platform = row.platform.value;
-                            award = row.award.value
+                            award = row.award ? row.award.value : "Unknown"
 
                             if (selectedCategory === "Movie") {
                                 director = row.director.value
@@ -576,7 +569,7 @@ $(document).ready(function () {
                         } else {
                             secondColumn = length;
                             fourthColumn = rating;
-                            fourthColumnTitle = "Rating";
+                            fourthColumnTitle = "IMDB Rating";
                             if (selectedCategory === "Series") {
                                 secondColumnTitle = "Number of Seasons";
                             }
@@ -587,9 +580,9 @@ $(document).ready(function () {
                         }
 
                         let result = `
-						<div id=card-${resultId} class="container d-flex h-100 card mb-3 text-center list-group-item preloadResults" style="max-height: 280px;">
+						<div id=${resultId} title="Click to toggle details" class="container d-flex h-100 card mb-3 text-center list-group-item preloadResults" style="max-height: 300px;">
 							<div class="row justify-content-center ">
-								<h5>${title}</h5>
+								<h4 class="card-h4">${title}</h5>
 							</div>
 
 							<div class="row justify-content-center row-cols-5">
@@ -641,7 +634,7 @@ $(document).ready(function () {
 
                         if (selectedCategory === "Book") {
                             expandedView = `
-							<div id=${resultId} class="expanded-view">
+							<div id=exp-${resultId} class="expanded-view">
 								<div class="plot">
 									<p><span>Plot:</span> ${plot}</p>
 								</div>
@@ -653,7 +646,7 @@ $(document).ready(function () {
 							</div>`
                         } else {
                             expandedView = `
-							<div id=${resultId} class="expanded-view">
+							<div id=exp-${resultId} class="expanded-view">
 								<div class="plot">
 									<p><span>Plot:</span> ${plot}</p>
 									<p><span>Genres:</span> ${genreLabels}</p>
@@ -662,7 +655,7 @@ $(document).ready(function () {
 								</div>
 								<div class="details">
 									<p id=${resultId + platform.replace(" ", "")}><span>Available on:</span> ${platform}</p>
-									<p id=${resultId + award.replace(" ", "")}"><span>Won Award:</span> ${award}</p>
+									<p id=${resultId + award.replace(" ", "")}"><span>Awards:</span> ${award}</p>
 									<p><span>Cast: </span>${actorNames}</p>
 							`
 
@@ -678,12 +671,14 @@ $(document).ready(function () {
                         $(".resultBlock").append(expandedView);
                         $(".expanded-view").hide()
                     });
+
+                    // window.location = $(`#header-${selectedCategory}`)
                 },
             });
 
             $("#preloadBlock").preloader("remove");
             // $(".searchBlock").hide();
-            // $("html, body").animate({ scrollTop: $(document).height()/2 }, 1000)
+            $("html, body").animate({ scrollTop: $(document).height() }, 2000)
             $(".resultBlock").show();
 
             $(document).on("click", ".preloadResults", function (event) {

@@ -4,39 +4,85 @@ body {
     margin-bottom: 50px;
 }
 
-/* #English, 
-#All {
-    margin-right: 4vw;
-} */
+#return-button {
+    margin-top: 11vh;
+    font-size: 95%;
+}
+
+.alert.genre {
+    margin-bottom: 4vh;
+}
+
+
+#search,
+button.select-category {
+    font-size: 150%;
+}
+
+#search a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.alert {
+    margin-top: 5vh;
+}
+
+.result-header {
+    margin-bottom: 8vh;
+}
+
+.container.card {
+    margin-top: 10vh;
+    cursor: pointer;
+    background-color: rgb(58, 145, 216);
+    padding-top: 2vh;
+    padding-bottom: 1vh;
+}
+
+.container.card  p.card-title, h4.card-h4 {
+    color: white;
+}
+
+.container.card h4.card-h4 {
+    margin-bottom: 2vh;
+}
+
+
+span #required {
+    color: red;
+    font-style: italic;
+}
+
+#view-instruction {
+    width: 80%;
+    margin: auto;
+    font-style: italic;
+    text-align: center;
+}
+
+.radios {
+    width: 25%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+}
 
 .radio-container {
-    width: 90%;
-    margin: auto;
-    padding: 0vh 5vw; 
+    font-size: 110%;
 }
 
-.toggle-radios {
-    width: 40%;
-    margin: auto; 
-}
-
-.radios label,
-#toggle-container label{
+.radio-container label {
     margin-left: 0.5vw;
 }
 
-.radios label:nth-of-type(1),
-#toggle-container label:nth-of-type(1){
-    margin-right: 7vw;
-}
 
 .filter-header{
     margin-top: 10vh;
 }
 
-.dropdown-container,
-.radios{
-    width: 40%; 
+.dropdown-container {
+    width: 30%; 
     margin: auto;
 }
 
@@ -49,14 +95,10 @@ body {
     margin: auto; 
 }
 
-.container.card {
-    margin-top: 10vh;
-    background-color: rgb(58, 145, 216);
-}
-
 .expanded-view {
-  width: 80%;
+  width: 85%;
   margin: auto;
+  font-size: 120%;
   display: flex;
   justify-content: space-between;
 }
