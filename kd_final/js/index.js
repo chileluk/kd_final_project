@@ -160,16 +160,16 @@ let tvOptions = {
 	Length: { text: "the minimum number of show seasons", type: "slider", start: 1, end: 10, step: 1, value: 0 },
 	Rating: { text: "the minimum viewer rating of the show", type: "slider", start: 1, end: 10, step: 1,  value: 0 },
 	Year: { text: "the minimum release year of the show", type: "slider", start: 1970, end: 2020, step: 10, value: 0 },
-	Platforms: { text: "platforms where the show is streaming", type: "dropdown", choices: tvPlatforms, value: "" },
-	Awards: { text: "the awards won by the show", type: "dropdown", choices: tvAwards, value: "" },
+	Platforms: { text: "a platform where the show is streaming", type: "dropdown", choices: tvPlatforms, value: "" },
+	Awards: { text: "an award won by the show", type: "dropdown", choices: tvAwards, value: "" },
 	Language: { text: "the language of the show", type: "radio", value: false } // true for English only
 }
 let movieOptions = {
 	Length: { text: "the maximum runtime of the movie (in minutes)", type: "slider", start: 60, end: 200, step: 20, value: 300 },
 	Rating: { text: "the minimum viewer rating of the movie", type: "slider", start: 1, end: 10, step: 1, value: 0 },
 	Year: { text: "the minimum release year of the movie", type: "slider", start: 1970, end: 2020, step: 10, value: 0 },
-    Platforms: { text: "platforms where the movie is streaming", type: "dropdown", choices: moviePlatforms, value: "" },
-	Awards: { text: "the awards won by the movie", type: "dropdown", choices: movieAwards, value: "" },
+    Platforms: { text: "a platform where the movie is streaming", type: "dropdown", choices: moviePlatforms, value: "" },
+	Awards: { text: "an award won by the movie", type: "dropdown", choices: movieAwards, value: "" },
 	Language: { text: "the language of the movie", type: "radio", value: false }
 }
 
@@ -186,7 +186,6 @@ var rangeSelector = (element, start, end, interval, origin) => {
 		onChange: function (val) {
 			origin.value = val.start.value
 			console.log("SET VALUE:", origin.value)
-			// console.log(origin)
 		},
 	});
 };
@@ -195,7 +194,9 @@ var dropdownMenu = (element, options, origin) => {
 	let choices = ""
 	let className = element.replace("#", "")
 	let $select = `<select name="${className}" class="${className} dropdown"></select>`
-	$(element).append($select)
+    $(element).append($select)
+
+    $(`.${className}`).append(`<option value="">Choose one</option>`)
 	$.each(options, (i, opt) => {
 		let $item = `<option value=${opt.replace(" ", "").replace("+", "Plus")}>${opt}</option>`
 		$(`.${className}`).append($item)
@@ -203,11 +204,12 @@ var dropdownMenu = (element, options, origin) => {
 
 	$(`select.${className}`).change(function () {
 		let choice = $(this).children("option:selected").val();
-		choices += choices.includes(choice) ? "" : "ent:" + choice + " ";
+		// choices += choices.includes(choice) ? "" : "ent:" + choice + " ";
+        // origin.value = choices.trim()
+        
+        origin.value = choice ? "ent:" + choice : "";
 
-		origin.value = choices.trim()
-
-		console.log("VALUES:", origin.value)	
+		console.log("SELECTED VALUE:", origin.value)	
 	});
 }
 
@@ -272,11 +274,11 @@ $(document).ready(function () {
         // SET the selected Category
         selectedCategory = $(".bg-info").attr("id");
 
-        if (selectedCategory === undefined) {
+        if (!selectedCategory) {
             let proceedHeader = `<div class="alert alert-success text-center proceed-error" role="alert">
-                <h4 class="alert-heading">Cannot proceed</h4>
+                <h4 class="alert-heading">Choose a Category</h4>
                 <hr>
-                <p class="mb-0"> Please select a Category before proceeding. 
+                <p class="mb-0"> Must select an entertainment Category before proceeding 
                 </p>
             </div>`;
             $(".proceed").append(proceedHeader);
@@ -414,12 +416,8 @@ $(document).ready(function () {
                     selectedGenres += " ";
                 });
 
-                
-
+                // check that user has selected at least one genre
                 let genreSet = selectedGenres.trim() !== ""
-                console.log("CATEGORY:", selectedCategory);
-                console.log("GENRES:", selectedGenres);
-                console.log("GENRE SET:", genreSet)
 
                 
                 $(".resultBlock").hide();
@@ -511,10 +509,8 @@ $(document).ready(function () {
                             let country = row.country.value;
                             // let genreLabels = row.genreLabels.value.split(",")
                             let genreLabels = row.genreLabels.value.replace(/,/g, ", ")
-                            console.log("LABELS:", genreLabels)
 
                             let firstGenre = genreLabels.split(", ")[0]
-                            console.log("FIRST GENRE:", firstGenre)
                             let genreIcon = genreSelectors[`${firstGenre}`];
 
                             let thumbnail, categoryIcon, resultId
@@ -542,7 +538,6 @@ $(document).ready(function () {
                                 pageCount = row.pageCount.value;
                                 thumbnail = `http://covers.openlibrary.org/b/isbn/${plainISBN}-M.jpg`;
 
-                                console.log("THUMBNAIL:", thumbnail)
                                 thumbnail = !thumbnail ? "https://img.icons8.com/nolan/512/books-1.png" : thumbnail
                                 wikipediaLink = row.wikipedia.value;
 
