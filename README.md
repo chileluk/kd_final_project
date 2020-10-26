@@ -90,7 +90,7 @@ To get a local copy up and running follow these simple example steps.
 
 This is a step by step guide on how to run this application.
 
-1. Clone the repo
+1. Clone the repository.
 ```sh
 git clone https://github.com/chileluk/kd_final_project.git
 ```
