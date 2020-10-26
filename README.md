@@ -94,11 +94,10 @@ This is a step by step guide on how to run this application.
 ```sh
 git clone https://github.com/chileluk/kd_final_project.git
 ```
-2. Set up a triplestore. You may choose any triplestore but we recommend GraphDB since that is what we have been using during this project and hence we can offer you support in case of technical difficulties.
 
-3. Create a repository in GraphDB and call with id `finder`. Select the OWL Max(Optimized) ruleset.
+2. Create a repository in GraphDB and give it the id `finder`. Select the OWL Max(Optimized) ruleset.
 
-4. Make this your default repository in GraphDB. (After following these steps you do not need to configure repository URL in the code since it will automatically be set as `http://localhost:7200/repositories/finder` and it will be accessesed by the application). However, in case of issues or if your triplestore has a different IP address than your local machine you will need to set the value of the `localEndpoint` variable in the app files to the exact url of your repository as follows:
+3. Make this your default repository in GraphDB. (After following these steps you do not need to configure repository URL in the code since it will automatically be set as `http://localhost:7200/repositories/finder` and it will be accessesed by the application). However, in case of issues or if your triplestore has a different IP address than your local machine you will need to set the value of the `localEndpoint` variable in the app files to the exact url of your repository as follows:
 
     
     * Navigate to the `js` folder within the `finder` folder and open the `index.js` file.
