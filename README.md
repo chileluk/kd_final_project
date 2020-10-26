@@ -83,7 +83,7 @@ To get a local copy up and running follow these simple example steps.
 ### Prerequisites
 
 
-* None
+* GraphDB installed on your machine
 
 
 ### Installation
@@ -96,17 +96,17 @@ git clone https://github.com/chileluk/kd_final_project.git
 ```
 2. Set up a triplestore. You may choose any triplestore but we recommend GraphDB since that is what we have been using during this project and hence we can offer you support in case of technical difficulties.
 
-3. Create a repository in GraphDB and call it `finder`.
+3. Create a repository in GraphDB and call with id `finder`. Select the OWL Max(Optimized) ruleset.
 
-4. Make this repository as your default repository in GraphDB. After following these steps you do not need to configure repository URL since it will automatically be set as `http://localhost:7200/repositories/finder` and it will be accessesed by the application. In case if you run into a problem or if your triplestore have a different IP address than your local machine you will need to configure the `localEndpoint` into the exact url of your repository. This should be done in the following step.
+4. Make this your default repository in GraphDB. (After following these steps you do not need to configure repository URL in the code since it will automatically be set as `http://localhost:7200/repositories/finder` and it will be accessesed by the application). However, in case of issues or if your triplestore has a different IP address than your local machine you will need to set the value of the `localEndpoint` variable in the app files to the exact url of your repository as follows:
 
     
     * Navigate to the `js` folder within the `finder` folder and open the `index.js` file.
-    * One the first line where you find:
+    * On the first line of this file where you find:
     ```JS
     const localEndpoint = "http://localhost:7200/repositories/finder"
     ```
-    replace `http://localhost:7200/repositories/finder` with the URL of the repository you created in GraphDB .
+    replace `http://localhost:7200/repositories/finder` with the URL of the repository you created in GraphDB.
     
 4. Upload the file `finder.ttl` into the repository you just created.
   
@@ -118,20 +118,6 @@ start index.html
 ```
 7. As an alternative to the last two steps, simply open the `finder/index.html` file in a web browser, preferably Google Chrome.
     
-
-
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-
-
-
-<!-- ROADMAP -->
-## Roadmap
-
-See the [open issues](https://github.com/chileluk/kd_final_project/issues) for a list of proposed features (and known issues).
-
 
 
 <!-- CONTRIBUTING -->
