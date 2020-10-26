@@ -69,6 +69,7 @@ These are the main technologies and frameworks used for this project.
 * [Bootstrap](https://getbootstrap.com)
 * [JQuery](https://jquery.com)
 * [ECMAScript](http://ecma-international.org)
+* [HTML5](https://html.spec.whatwg.org)
 
 
 
