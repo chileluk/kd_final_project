@@ -70,6 +70,7 @@ These are the main technologies and frameworks used for this project.
 * [JQuery](https://jquery.com)
 * [ECMAScript](http://ecma-international.org)
 * [HTML5](https://html.spec.whatwg.org)
+* [CSS](https://w3.org/TR/CSS2)
 
 
 
