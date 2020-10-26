@@ -1,4 +1,4 @@
-const localEndpoint = "http://localhost:7200/repositories/ent_ontology"
+const localEndpoint = "http://localhost:7200/repositories/finder"
 
 
 // QUERIES - video for movie and series
