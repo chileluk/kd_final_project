@@ -109,36 +109,8 @@ git clone https://github.com/chileluk/kd_final_project.git
     
 4. Upload the file `finder.ttl` into the repository you just created.
   
-5. On the command line, navigate to the `finder` folder of the project.
-  
-6. Run the following command in the terminal
-```sh
-start index.html
-```
-7. As an alternative to the last two steps, simply open the `finder/index.html` file in a web browser, preferably Google Chrome.
+5. Open the `finder/index.html` file in a web browser, preferably Google Chrome.
     
-
-
-<!-- CONTRIBUTING -->
-## Contributing
-
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch
-```sh
-git checkout -b feature/AmazingFeature
-```
-3. Commit your Changes
-```sh
-git commit -m 'Add some AmazingFeature'
-```
-4. Push to the Branch
-```sh
-git push origin feature/AmazingFeature
-```
-5. Open a Pull Request
-
 
 
 <!-- LICENSE -->
@@ -147,14 +119,6 @@ git push origin feature/AmazingFeature
 Distributed under the MIT License. See `LICENSE` for more information.
 
 
-
-<!-- CONTACT -->
-## Contact
-
-[Hamoud Khamis](mailto:h.o.khamis@student.vu.nl)
-[Chileshe]
-[Denise]
-[Gabriela]
 
 [Repository](https://github.com/chileluk/kd_final_project)
 
