@@ -268,422 +268,440 @@ $(document).ready(function () {
 
 
     $(".btn.select-category").click(function () {
-        $(".select-category").hide();
-        $(".basic-options").hide();
-        $("#preloadBlock").preloader();
-
 
         // SET the selected Category
         selectedCategory = $(".bg-info").attr("id");
 
-        // hide welcome message
-        $(".jumbotron").hide()
-        $("#return-button").show()
-        
-		
+        if (selectedCategory === undefined) {
+            let proceedHeader = `<div class="alert alert-success text-center proceed-error" role="alert">
+                <h4 class="alert-heading">Cannot proceed</h4>
+                <hr>
+                <p class="mb-0"> Please select a Category before proceeding. 
+                </p>
+            </div>`;
+            $(".proceed").append(proceedHeader);
 
-        // FILTERS PER CATEGORY
-        let genreSelectors;
-        let categoryOptions;
-
-        if (selectedCategory === "Book") {
-            genreSelectors = bookGenres
-            categoryOptions = bookOptions
-        } else if (selectedCategory === "Movie") {
-            genreSelectors = filmGenres
-            categoryOptions = movieOptions
+            $("html, body").animate({ scrollTop: $(document).height() }, 1500)
         } else {
-            genreSelectors = filmGenres
-            categoryOptions = tvOptions
-        }
+            console.log(selectedCategory)
 
+            //Hide any previously shown proceed-error
+            $(".proceed-error").hide();
 
-        // GENRE MENU
-        let heading = `<div class="alert alert-success text-center genre" role="alert">
-            <h4 class="alert-heading">Genres</h4>
-            <hr>
-            <p class="mb-0">
-                Select at least one ${selectedCategory === "Series" ? "TV Show" : selectedCategory} genre <em><strong>(*required)</strong></em>
-            </p>
-        </div>`
-
-        $(".genreHeading").append(heading);
-
-        // GENRE MENU OPTIONS
-        $.each(genreSelectors, (genre, url) => {
-            let iconSelector = `<div class="col mb-4">
-				<div id="${genre}" class="card genreSelector">
-
-					<img src="${url}" class="card-img-top" alt="...">
-
-					<div class="card-footer text-center font-weight-bold">
-						<p class="card-title">${genre.replace("_", " ").replace("(genre)", "").replace("novel", "")}</p>
-					</div>
-				</div>
-			</div>`;
-
-            $(".row-cols-6").append(iconSelector);
-        });
-
-
-        // OTHER FILTERS
-        $.each(categoryOptions, (option, val) => {
-            let filterId = `book-${option}`
-            let $container = `<div id="${option}"></div>`;
-            let heading = `<div class="alert alert-success text-center filter-header" role="alert">
-				<h4 class="alert-heading">${option}</h4>
-				<hr>
-				<p class="mb-0">Select ${val.text + " <em><strong>(optional)</strong></em>"}</p>
-				</div>`
-			
-            $(".searchBlock").append($container)
-            $(`#${option}`).append(heading)
-			
-            if (val.type === "slider") {
-                // create a range slider
-                let slider = `<div id="${filterId}" class="range"></div>`;
-                $(`#${option}`).append(slider)
-                rangeSelector(`#${filterId}`, val.start, val.end, val.step, categoryOptions[option])
-            }
-            else if (val.type === "dropdown") {
-                // create a dropdown menu
-                let dropdown = `<div id="${filterId}" class="dropdown-container"></div>`;
-                $(`#${option}`).append(dropdown)
-                dropdownMenu(`#${filterId}`, val.choices, categoryOptions[option])
-            }
-            else if (val.type === "radio") {
-                // create radio buttons
-                let radioForm = `<form id="${filterId}" class="radios"></form>`;
-                $(`#${option}`).append(radioForm)
-                radioButtons(`#${filterId}`, categoryOptions[option])
-            }
-        })
-
-
-        // SEARCH BUTTON CLICK
-        let search = `<button id="search" type="button" class="btn btn-primary select-category">
-            <a href="#header-${selectedCategory}">Search</a>
-        </button>`;
-        $(".search").append(search);
-        $("#preloadBlock").preloader("remove");
-        $(".basic-options").hide();
-        $(".searchBlock").show();
-
-        $(document).on("click", ".genreSelector", function () {
-            $(this).toggleClass("bg-info");
-        });
-
-        $("#search").click(function () {
-            // $(".searchBlock").hide();
+            $(".select-category").hide();
+            $(".basic-options").hide();
             $("#preloadBlock").preloader();
 
-            // hide any previosly shown error message
-            $(".result-message").hide();
+                // hide welcome message
+            $(".jumbotron").hide()
+            $("#return-button").show()
+            
+            
 
-            // clear results block in case doing a modified search
-            $(".resultBlock").empty()
+            // FILTERS PER CATEGORY
+            let genreSelectors;
+            let categoryOptions;
 
-            var selectedGenres = "";
-            let genre;
-
-            $(".genreSelector.bg-info").each((index, element) => {
-                if (selectedCategory === "Book") {
-                    genre = "dbr:" + $(element).attr("id");
-                }
-                else {
-                    genre = "ent:" + $(element).attr("id");
-                }
-
-                selectedGenres += genre; //genre1 genre2 genre3 ...
-                selectedGenres += " ";
-            });
-
-			
-
-            let genreSet = selectedGenres.trim() !== ""
-            console.log("CATEGORY:", selectedCategory);
-            console.log("GENRES:", selectedGenres);
-            console.log("GENRE SET:", genreSet)
-
-			
-            $(".resultBlock").hide();
-
-			
-            let query;
-            let resultsLabel = selectedCategory + "s"
             if (selectedCategory === "Book") {
-                query = bookQuery(selectedGenres)
+                genreSelectors = bookGenres
+                categoryOptions = bookOptions
             } else if (selectedCategory === "Movie") {
-                query = videoQuery(selectedCategory, selectedGenres, movieOptions)
+                genreSelectors = filmGenres
+                categoryOptions = movieOptions
             } else {
-                resultsLabel = "Shows"
-                query = videoQuery(selectedCategory, selectedGenres, tvOptions)
+                genreSelectors = filmGenres
+                categoryOptions = tvOptions
             }
 
-            console.log(query)
 
-            $.ajax({
-                url: localEndpoint,
-                accepts: {
-                    json: "application/sparql-results+json",
-                },
-                data: {
-                    query,
-                },
-                dataType: "json",
-                error: (error) => {
-                    console.error(error);
-                    // REQUEST ERR message
-                    let resultHeader;
-                    resultHeader = `<div class="alert alert-success text-center result-message" role="alert">
-						<h4 class="alert-heading">Search Results</h4>
-						<hr>
-						<p class="mb-0">Sorry, There was an error during search. Please try again</p>
-					</div>`;
-                    $(".resultBlock").append(resultHeader);
-                },
-                success: function (response) {
-                    let resultHeader;
-                    var results = response.results.bindings;
-                    if (results.length === 0) {
-                        // No-matching-results message
-                        if (genreSet) {
-                            resultHeader = `<div class="alert alert-success text-center result-message" role="alert">
-								<h4 class="alert-heading">Search Results</h4>
-								<hr>
-								<p class="mb-0"> Sorry, the selected search criteria did not return any results. 
-									Please try searching again with different criteria. 
-									\nTIP: Select more genres to broaden the search
-								</p>
-							</div>`;
-                            $(".resultBlock").append(resultHeader);
-                        } else {
-                            // Genre-not-set message
-                            resultHeader = `<div class="alert alert-success text-center result-message" role="alert">
-								<h4 class="alert-heading">Search Error</h4>
-								<hr>
-								<p class="mb-0">You did not select any genres. Must select at least one genre</p>
-							</div>`;
-                            $(".resultBlock").append(resultHeader);
-                        }
-						
-                    } else {
-                        resultHeader = `<div id=header-${selectedCategory} class="result-header alert alert-success text-center" role="alert">
-							<h4 class="alert-heading">Recomended ${resultsLabel}</h4>
-							<hr>
-							<p class="mb-0">You may be interested in the following ${resultsLabel.toLowerCase()}</p>
-						</div>`;
-                        // $(".search").hide()
+            // GENRE MENU
+            let heading = `<div class="alert alert-success text-center genre" role="alert">
+                <h4 class="alert-heading">Genres</h4>
+                <hr>
+                <p class="mb-0">
+                    Select at least one ${selectedCategory === "Series" ? "TV Show" : selectedCategory} genre <em><strong>(*required)</strong></em>
+                </p>
+            </div>`
 
-                        let instruction = `<h5 id="view-instruction">Click on each result to view more details and click again to hide details</h5>`
+            $(".genreHeading").append(heading);
 
-                        $(".resultBlock").append(resultHeader);
-                        $(".resultBlock").append(instruction);
+            // GENRE MENU OPTIONS
+            $.each(genreSelectors, (genre, url) => {
+                let iconSelector = `<div class="col mb-4">
+                    <div id="${genre}" class="card genreSelector">
 
-                    }
+                        <img src="${url}" class="card-img-top" alt="...">
 
-                    let imdbIds = ""
-                    let isbns = ""
+                        <div class="card-footer text-center font-weight-bold">
+                            <p class="card-title">${genre.replace("_", " ").replace("(genre)", "").replace("novel", "")}</p>
+                        </div>
+                    </div>
+                </div>`;
 
-                    // RESULTS
-                    $.each(results, (index, row) => {
-
-                        // fields common to all three
-                        let title = row.title.value;
-                        let year = row.year.value;
-                        let plot = row.plot.value;
-                        let country = row.country.value;
-                        // let genreLabels = row.genreLabels.value.split(",")
-                        let genreLabels = row.genreLabels.value.replace(/,/g, ", ")
-                        console.log("LABELS:", genreLabels)
-
-                        let firstGenre = genreLabels.split(", ")[0]
-                        console.log("FIRST GENRE:", firstGenre)
-                        let genreIcon = genreSelectors[`${firstGenre}`];
-
-                        let thumbnail, categoryIcon, resultId
-
-                        // Book fields
-                        let author, pageCount, wikipediaLink, isbn;
-
-                        // movie/show fields
-                        let imdbID, rating, language, length, actorNames, platform, award, director
-
-
-                        if (selectedCategory === "Book") {
-                            isbn = row.isbn.value;
-                            // hacky fix for duplicates
-                            if (isbns.includes(isbn)) {
-                                return
-                            }
-                            isbns += isbn + " "
-                            resultId = isbn
-
-                            let plainISBN = isbn.replace(/-/g, "")
-
-                            genreIcon = genreSelectors[`${firstGenre.replace(" ", "_")}`];
-                            author = row.authorName.value;
-                            pageCount = row.pageCount.value;
-                            thumbnail = `http://covers.openlibrary.org/b/isbn/${plainISBN}-M.jpg`;
-
-                            console.log("THUMBNAIL:", thumbnail)
-                            thumbnail = !thumbnail ? "https://img.icons8.com/nolan/512/books-1.png" : thumbnail
-                            wikipediaLink = row.wikipedia.value;
-
-                            categoryIcon = categorySelectors[`${selectedCategory}`];
-
-                        } else {
-                            // MOVIE & SERIES
-                            imdbID = row.imdbID.value;
-                            if (imdbIds.includes(imdbID)) {
-                                return
-                            }
-                            imdbIds += imdbID + " "
-
-                            resultId = imdbID
-
-                            thumbnail = row.poster.value;
-							
-                            rating = row.rating.value;
-                            language = row.language.value;
-                            length = row.duration.value;
-                            actorNames = row.actorNames.value.replace(/,/g, ", ")
-                            platform = row.platform.value;
-                            award = row.award ? row.award.value : "Unknown"
-
-                            if (selectedCategory === "Movie") {
-                                director = row.director.value
-                            }
-
-                            categoryIcon = categorySelectors[`${selectedCategory}`];
-                        }
-
-
-                        let secondColumn, secondColumnTitle, fourthColumn, fourthColumnTitle;
-
-                        if (selectedCategory === "Book") {
-                            secondColumn = pageCount;
-                            secondColumnTitle = "Page Count";
-                            fourthColumn = author;
-                            fourthColumnTitle = "Author";
-                        } else {
-                            secondColumn = length;
-                            fourthColumn = rating;
-                            fourthColumnTitle = "IMDB Rating";
-                            if (selectedCategory === "Series") {
-                                secondColumnTitle = "Number of Seasons";
-                            }
-                            if (selectedCategory === "Movie") {
-                                secondColumn += " min";
-                                secondColumnTitle = "Runtime";
-                            }
-                        }
-
-                        let result = `
-						<div id=${resultId} title="Click to toggle details" class="container d-flex h-100 card mb-3 text-center list-group-item preloadResults" style="max-height: 300px;">
-							<div class="row justify-content-center ">
-								<h4 class="card-h4">${title}</h5>
-							</div>
-
-							<div class="row justify-content-center row-cols-5">
-								<div class="col mb-4">
-									<div class="resultCard justify-content-center image">
-										<img src="${thumbnail}" class="card-img-top resultImg" alt="...">
-									</div>
-								</div>
-
-								<div class="col mb-4">
-									<div class="card resultCard">
-										<img src="${genreIcon}" class="card-img-top" alt="...">
-									</div>
-									<div class="card-footer text-center font-weight-bold">
-										<p class="card-title category">${firstGenre}</p>
-									</div>
-								</div>
-								
-								<div class="col mb-4 ">
-									<div class="card card-body resultCard justify-content-center">
-										<h1 class=""><length>${secondColumn}</length></h1>
-									</div>
-									<div class="card-footer text-center font-weight-bold">
-										<p class="card-title">${secondColumnTitle}</p>
-									</div>
-								</div>
-								
-								<div class="col mb-4">
-									<div class="card card-body resultCard justify-content-center">
-										<h3 class="">${fourthColumn}</h3>
-									</div>
-									<div class="card-footer text-center font-weight-bold">
-										<p class="card-title">${fourthColumnTitle}</p>
-									</div>
-								</div>
-								
-								<div class="col mb-4">
-									<div class="card card-body resultCard justify-content-center">
-										<h1 class=""><year>${year}</year></h1>
-									</div>
-									<div class="card-footer text-center font-weight-bold">
-										<p class="card-title">Release Year</p>
-									</div>
-								</div>
-							</div>
-						</div>`;
-
-                        let expandedView;
-
-                        if (selectedCategory === "Book") {
-                            expandedView = `
-							<div id=exp-${resultId} class="expanded-view">
-								<div class="plot">
-									<p><span>Plot:</span> ${plot}</p>
-								</div>
-								<div class="details">
-                                    <p><span>Country:</span> ${country}</p>
-                                    <p><span>Genres:</span> ${genreLabels}</p>
-									<a href=${wikipediaLink} target="_blank">More Info</a>
-								</div>
-							</div>`
-                        } else {
-                            expandedView = `
-							<div id=exp-${resultId} class="expanded-view">
-								<div class="plot">
-									<p><span>Plot:</span> ${plot}</p>
-									<p><span>Genres:</span> ${genreLabels}</p>
-									<p><span>Language:</span> ${language}</p>
-									<p><span>Country:</span> ${country}</p>
-								</div>
-								<div class="details">
-									<p id=${resultId + platform.replace(" ", "")}><span>Available on:</span> ${platform}</p>
-									<p id=${resultId + award.replace(" ", "")}"><span>Awards:</span> ${award}</p>
-									<p><span>Cast: </span>${actorNames}</p>
-							`
-
-                            if (selectedCategory === "Movie") {
-                                expandedView += `<p><span>Director:</span> ${director}</p>`
-                            }
-
-                            expandedView += `<a href=https://www.imdb.com/title/${imdbID} target="_blank">More Info</a>`
-                            expandedView += `</div></div>`
-                        }
-
-                        $(".resultBlock").append(result);
-                        $(".resultBlock").append(expandedView);
-                        $(".expanded-view").hide()
-                    });
-
-                    // window.location = $(`#header-${selectedCategory}`)
-                },
+                $(".row-cols-6").append(iconSelector);
             });
 
-            $("#preloadBlock").preloader("remove");
-            // $(".searchBlock").hide();
-            $("html, body").animate({ scrollTop: $(document).height() }, 2000)
-            $(".resultBlock").show();
 
-            $(document).on("click", ".preloadResults", function (event) {
+            // OTHER FILTERS
+            $.each(categoryOptions, (option, val) => {
+                let filterId = `book-${option}`
+                let $container = `<div id="${option}"></div>`;
+                let heading = `<div class="alert alert-success text-center filter-header" role="alert">
+                    <h4 class="alert-heading">${option}</h4>
+                    <hr>
+                    <p class="mb-0">Select ${val.text + " <em><strong>(optional)</strong></em>"}</p>
+                    </div>`
+                
+                $(".searchBlock").append($container)
+                $(`#${option}`).append(heading)
+                
+                if (val.type === "slider") {
+                    // create a range slider
+                    let slider = `<div id="${filterId}" class="range"></div>`;
+                    $(`#${option}`).append(slider)
+                    rangeSelector(`#${filterId}`, val.start, val.end, val.step, categoryOptions[option])
+                }
+                else if (val.type === "dropdown") {
+                    // create a dropdown menu
+                    let dropdown = `<div id="${filterId}" class="dropdown-container"></div>`;
+                    $(`#${option}`).append(dropdown)
+                    dropdownMenu(`#${filterId}`, val.choices, categoryOptions[option])
+                }
+                else if (val.type === "radio") {
+                    // create radio buttons
+                    let radioForm = `<form id="${filterId}" class="radios"></form>`;
+                    $(`#${option}`).append(radioForm)
+                    radioButtons(`#${filterId}`, categoryOptions[option])
+                }
+            })
+
+
+            // SEARCH BUTTON CLICK
+            let search = `<button id="search" type="button" class="btn btn-primary select-category">
+                <a href="#header-${selectedCategory}">Search</a>
+            </button>`;
+            $(".search").append(search);
+            $("#preloadBlock").preloader("remove");
+            $(".basic-options").hide();
+            $(".searchBlock").show();
+
+            $(document).on("click", ".genreSelector", function () {
                 $(this).toggleClass("bg-info");
             });
-        });
+
+            $("#search").click(function () {
+                // $(".searchBlock").hide();
+                $("#preloadBlock").preloader();
+
+                // hide any previosly shown error message
+                $(".result-message").hide();
+
+                // clear results block in case doing a modified search
+                $(".resultBlock").empty()
+
+                var selectedGenres = "";
+                let genre;
+
+                $(".genreSelector.bg-info").each((index, element) => {
+                    if (selectedCategory === "Book") {
+                        genre = "dbr:" + $(element).attr("id");
+                    }
+                    else {
+                        genre = "ent:" + $(element).attr("id");
+                    }
+
+                    selectedGenres += genre; //genre1 genre2 genre3 ...
+                    selectedGenres += " ";
+                });
+
+                
+
+                let genreSet = selectedGenres.trim() !== ""
+                console.log("CATEGORY:", selectedCategory);
+                console.log("GENRES:", selectedGenres);
+                console.log("GENRE SET:", genreSet)
+
+                
+                $(".resultBlock").hide();
+
+                
+                let query;
+                let resultsLabel = selectedCategory + "s"
+                if (selectedCategory === "Book") {
+                    query = bookQuery(selectedGenres)
+                } else if (selectedCategory === "Movie") {
+                    query = videoQuery(selectedCategory, selectedGenres, movieOptions)
+                } else {
+                    resultsLabel = "Shows"
+                    query = videoQuery(selectedCategory, selectedGenres, tvOptions)
+                }
+
+                console.log(query)
+
+                $.ajax({
+                    url: localEndpoint,
+                    accepts: {
+                        json: "application/sparql-results+json",
+                    },
+                    data: {
+                        query,
+                    },
+                    dataType: "json",
+                    error: (error) => {
+                        console.error(error);
+                        // REQUEST ERR message
+                        let resultHeader;
+                        resultHeader = `<div class="alert alert-success text-center result-message" role="alert">
+                            <h4 class="alert-heading">Search Results</h4>
+                            <hr>
+                            <p class="mb-0">Sorry, There was an error during search. Please try again</p>
+                        </div>`;
+                        $(".resultBlock").append(resultHeader);
+                    },
+                    success: function (response) {
+                        let resultHeader;
+                        var results = response.results.bindings;
+                        if (results.length === 0) {
+                            // No-matching-results message
+                            if (genreSet) {
+                                resultHeader = `<div class="alert alert-success text-center result-message" role="alert">
+                                    <h4 class="alert-heading">Search Results</h4>
+                                    <hr>
+                                    <p class="mb-0"> Sorry, the selected search criteria did not return any results. 
+                                        Please try searching again with different criteria. 
+                                        \nTIP: Select more genres to broaden the search
+                                    </p>
+                                </div>`;
+                                $(".resultBlock").append(resultHeader);
+                            } else {
+                                // Genre-not-set message
+                                resultHeader = `<div class="alert alert-success text-center result-message" role="alert">
+                                    <h4 class="alert-heading">Search Error</h4>
+                                    <hr>
+                                    <p class="mb-0">You did not select any genres. Must select at least one genre</p>
+                                </div>`;
+                                $(".resultBlock").append(resultHeader);
+                            }
+                            
+                        } else {
+                            resultHeader = `<div id=header-${selectedCategory} class="result-header alert alert-success text-center" role="alert">
+                                <h4 class="alert-heading">Recomended ${resultsLabel}</h4>
+                                <hr>
+                                <p class="mb-0">You may be interested in the following ${resultsLabel.toLowerCase()}</p>
+                            </div>`;
+                            // $(".search").hide()
+
+                            let instruction = `<h5 id="view-instruction">Click on each result to view more details and click again to hide details</h5>`
+
+                            $(".resultBlock").append(resultHeader);
+                            $(".resultBlock").append(instruction);
+
+                        }
+
+                        let imdbIds = ""
+                        let isbns = ""
+
+                        // RESULTS
+                        $.each(results, (index, row) => {
+
+                            // fields common to all three
+                            let title = row.title.value;
+                            let year = row.year.value;
+                            let plot = row.plot.value;
+                            let country = row.country.value;
+                            // let genreLabels = row.genreLabels.value.split(",")
+                            let genreLabels = row.genreLabels.value.replace(/,/g, ", ")
+                            console.log("LABELS:", genreLabels)
+
+                            let firstGenre = genreLabels.split(", ")[0]
+                            console.log("FIRST GENRE:", firstGenre)
+                            let genreIcon = genreSelectors[`${firstGenre}`];
+
+                            let thumbnail, categoryIcon, resultId
+
+                            // Book fields
+                            let author, pageCount, wikipediaLink, isbn;
+
+                            // movie/show fields
+                            let imdbID, rating, language, length, actorNames, platform, award, director
+
+
+                            if (selectedCategory === "Book") {
+                                isbn = row.isbn.value;
+                                // hacky fix for duplicates
+                                if (isbns.includes(isbn)) {
+                                    return
+                                }
+                                isbns += isbn + " "
+                                resultId = isbn
+
+                                let plainISBN = isbn.replace(/-/g, "")
+
+                                genreIcon = genreSelectors[`${firstGenre.replace(" ", "_")}`];
+                                author = row.authorName.value;
+                                pageCount = row.pageCount.value;
+                                thumbnail = `http://covers.openlibrary.org/b/isbn/${plainISBN}-M.jpg`;
+
+                                console.log("THUMBNAIL:", thumbnail)
+                                thumbnail = !thumbnail ? "https://img.icons8.com/nolan/512/books-1.png" : thumbnail
+                                wikipediaLink = row.wikipedia.value;
+
+                                categoryIcon = categorySelectors[`${selectedCategory}`];
+
+                            } else {
+                                // MOVIE & SERIES
+                                imdbID = row.imdbID.value;
+                                if (imdbIds.includes(imdbID)) {
+                                    return
+                                }
+                                imdbIds += imdbID + " "
+
+                                resultId = imdbID
+
+                                thumbnail = row.poster.value;
+                                
+                                rating = row.rating.value;
+                                language = row.language.value;
+                                length = row.duration.value;
+                                actorNames = row.actorNames.value.replace(/,/g, ", ")
+                                platform = row.platform.value;
+                                award = row.award ? row.award.value : "Unknown"
+
+                                if (selectedCategory === "Movie") {
+                                    director = row.director.value
+                                }
+
+                                categoryIcon = categorySelectors[`${selectedCategory}`];
+                            }
+
+
+                            let secondColumn, secondColumnTitle, fourthColumn, fourthColumnTitle;
+
+                            if (selectedCategory === "Book") {
+                                secondColumn = pageCount;
+                                secondColumnTitle = "Page Count";
+                                fourthColumn = author;
+                                fourthColumnTitle = "Author";
+                            } else {
+                                secondColumn = length;
+                                fourthColumn = rating;
+                                fourthColumnTitle = "IMDB Rating";
+                                if (selectedCategory === "Series") {
+                                    secondColumnTitle = "Number of Seasons";
+                                }
+                                if (selectedCategory === "Movie") {
+                                    secondColumn += " min";
+                                    secondColumnTitle = "Runtime";
+                                }
+                            }
+
+                            let result = `
+                            <div id=${resultId} title="Click to toggle details" class="container d-flex h-100 card mb-3 text-center list-group-item preloadResults" style="max-height: 300px;">
+                                <div class="row justify-content-center ">
+                                    <h4 class="card-h4">${title}</h5>
+                                </div>
+
+                                <div class="row justify-content-center row-cols-5">
+                                    <div class="col mb-4">
+                                        <div class="resultCard justify-content-center image">
+                                            <img src="${thumbnail}" class="card-img-top resultImg" alt="...">
+                                        </div>
+                                    </div>
+
+                                    <div class="col mb-4">
+                                        <div class="card resultCard">
+                                            <img src="${genreIcon}" class="card-img-top" alt="...">
+                                        </div>
+                                        <div class="card-footer text-center font-weight-bold">
+                                            <p class="card-title category">${firstGenre}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col mb-4 ">
+                                        <div class="card card-body resultCard justify-content-center">
+                                            <h1 class=""><length>${secondColumn}</length></h1>
+                                        </div>
+                                        <div class="card-footer text-center font-weight-bold">
+                                            <p class="card-title">${secondColumnTitle}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col mb-4">
+                                        <div class="card card-body resultCard justify-content-center">
+                                            <h3 class="">${fourthColumn}</h3>
+                                        </div>
+                                        <div class="card-footer text-center font-weight-bold">
+                                            <p class="card-title">${fourthColumnTitle}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col mb-4">
+                                        <div class="card card-body resultCard justify-content-center">
+                                            <h1 class=""><year>${year}</year></h1>
+                                        </div>
+                                        <div class="card-footer text-center font-weight-bold">
+                                            <p class="card-title">Release Year</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+
+                            let expandedView;
+
+                            if (selectedCategory === "Book") {
+                                expandedView = `
+                                <div id=exp-${resultId} class="expanded-view">
+                                    <div class="plot">
+                                        <p><span>Plot:</span> ${plot}</p>
+                                    </div>
+                                    <div class="details">
+                                        <p><span>Country:</span> ${country}</p>
+                                        <p><span>Genres:</span> ${genreLabels}</p>
+                                        <a href=${wikipediaLink} target="_blank">More Info</a>
+                                    </div>
+                                </div>`
+                            } else {
+                                expandedView = `
+                                <div id=exp-${resultId} class="expanded-view">
+                                    <div class="plot">
+                                        <p><span>Plot:</span> ${plot}</p>
+                                        <p><span>Genres:</span> ${genreLabels}</p>
+                                        <p><span>Language:</span> ${language}</p>
+                                        <p><span>Country:</span> ${country}</p>
+                                    </div>
+                                    <div class="details">
+                                        <p id=${resultId + platform.replace(" ", "")}><span>Available on:</span> ${platform}</p>
+                                        <p id=${resultId + award.replace(" ", "")}"><span>Awards:</span> ${award}</p>
+                                        <p><span>Cast: </span>${actorNames}</p>
+                                `
+
+                                if (selectedCategory === "Movie") {
+                                    expandedView += `<p><span>Director:</span> ${director}</p>`
+                                }
+
+                                expandedView += `<a href=https://www.imdb.com/title/${imdbID} target="_blank">More Info</a>`
+                                expandedView += `</div></div>`
+                            }
+
+                            $(".resultBlock").append(result);
+                            $(".resultBlock").append(expandedView);
+                            $(".expanded-view").hide()
+                        });
+
+                        // window.location = $(`#header-${selectedCategory}`)
+                    },
+                });
+
+                $("#preloadBlock").preloader("remove");
+                // $(".searchBlock").hide();
+                $("html, body").animate({ scrollTop: $(document).height() }, 2000)
+                $(".resultBlock").show();
+
+                $(document).on("click", ".preloadResults", function (event) {
+                    $(this).toggleClass("bg-info");
+                });
+            });
+
+        }
     });
 });

@@ -4,6 +4,10 @@ body {
     margin-bottom: 50px;
 }
 
+#back-top {
+    margin-right: 70vw;
+}
+
 #return-button {
     margin-top: 11vh;
     font-size: 95%;
@@ -29,6 +33,7 @@ button.select-category {
 }
 
 .result-header {
+    margin-top: 14vh;
     margin-bottom: 8vh;
 }
 
@@ -96,7 +101,7 @@ span #required {
 }
 
 .expanded-view {
-  width: 85%;
+  width: 80%;
   margin: auto;
   font-size: 120%;
   display: flex;
