@@ -176,7 +176,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## Acknowledgements
 * [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
 * [Img Shields](https://shields.io)
-* [MIT Licence](https://choosealicense.com/licenses/mit/)
+* [MIT License](https://choosealicense.com/licenses/mit/)
 * [rangeRover](https://github.com/styopdev/rangeRover)
 
 
