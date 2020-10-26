@@ -17,7 +17,7 @@
   <p align="center">
     A manual on how to run the Entertainment Finder Web Application.
     <br />
-    <a href="https://github.com/chileluk/kd_final_project"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/chileluk/kd_final_project"><strong>Explore the Docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/chileluk/kd_final_project">View Demo</a>
@@ -50,7 +50,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Product Name Screen Shot][product-screenshot]]
 
 Entertainment Finder is a simple web application that lets you find the entertainment of your choice. In Entertainment finder you can search for Movies, TV series and Books and 
 fine tune your search criteria in order to find a perfect entertainment that match your taste.
@@ -98,7 +98,7 @@ git clone https://github.com/chileluk/kd_final_project.git
 
 3. Create a repository in GraphDB and call it `ent_ontology`.
 
-4. Make this repository as your default repository in GraphDB. After following these steps you do not need to configure repository URL since it will automatically be set as `http://localhost:7200/repositories/ent_ontology` and it will be accessesed by the application. In case if you run into a problem or if your triplestore have a different IP address than your local machine you will need to configure the `localEndpoint` into the exact urlof your repository. This should be done in the following step.
+4. Make this repository as your default repository in GraphDB. After following these steps you do not need to configure repository URL since it will automatically be set as `http://localhost:7200/repositories/ent_ontology` and it will be accessesed by the application. In case if you run into a problem or if your triplestore have a different IP address than your local machine you will need to configure the `localEndpoint` into the exact url of your repository. This should be done in the following step.
 
     
     * Open `index.js` file.
