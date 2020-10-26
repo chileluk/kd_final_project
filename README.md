@@ -101,8 +101,8 @@ git clone https://github.com/chileluk/kd_final_project.git
 4. Make this repository as your default repository in GraphDB. After following these steps you do not need to configure repository URL since it will automatically be set as `http://localhost:7200/repositories/ent_ontology` and it will be accessesed by the application. In case if you run into a problem or if your triplestore have a different IP address than your local machine you will need to configure the `localEndpoint` into the exact urlof your repository. This should be done in the following step.
 
     
-    * Open `index.js`
-    * At line 1 where you find
+    * Open `index.js` file.
+    * At line 1 where you find:
     ```JS
     const localEndpoint = "http://localhost:7200/repositories/ent_ontology"
     ```
