@@ -55,7 +55,7 @@
 Entertainment Finder is a simple web application that lets you find the entertainment of your choice. In Entertainment finder you can search for Movies, TV series and Books and 
 fine tune your search criteria in order to find a perfect entertainment that match your taste.
 
-Here are some of the criteria you can apply you fine tune your search for a perfect entertainment:
+Here are some of the criteria you can apply to fine tune your search for a perfect entertainment:
 
 * Entertainment category. This has three oprions which are TV Series, Movies and Books.
 * Genres which are Comedy,
