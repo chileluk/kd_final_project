@@ -108,7 +108,7 @@ git clone https://github.com/chileluk/kd_final_project.git
     ```
     replace `http://localhost:7200/repositories/ent_ontology` with your repository URL.
     
-4. Upload the file `ent_ontology.ttl` into your repository you just created.
+4. Upload the file `finder.ttl` into your repository you just created.
   
 5. Navigate to the root folder of the project.
   
