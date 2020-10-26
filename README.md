@@ -100,7 +100,7 @@ git clone https://github.com/chileluk/kd_final_project.git
 
     
     * Open `index.js`
-    * àt line 1 where you find
+    * At line 1 where you find
     ```JS
     const localEndpoint = "http://localhost:7200/repositories/ent_ontology"
     ```
