@@ -96,26 +96,27 @@ git clone https://github.com/chileluk/kd_final_project.git
 ```
 2. Set up a triplestore. You may choose any triplestore but we recommend GraphDB since that is what we have been using during this project and hence we can offer you support in case of technical difficulties.
 
-3. Create a repository in GraphDB and call it `ent_ontology`.
+3. Create a repository in GraphDB and call it `finder`.
 
-4. Make this repository as your default repository in GraphDB. After following these steps you do not need to configure repository URL since it will automatically be set as `http://localhost:7200/repositories/ent_ontology` and it will be accessesed by the application. In case if you run into a problem or if your triplestore have a different IP address than your local machine you will need to configure the `localEndpoint` into the exact urlof your repository. This should be done in the following step.
+4. Make this repository as your default repository in GraphDB. After following these steps you do not need to configure repository URL since it will automatically be set as `http://localhost:7200/repositories/finder` and it will be accessesed by the application. In case if you run into a problem or if your triplestore have a different IP address than your local machine you will need to configure the `localEndpoint` into the exact url of your repository. This should be done in the following step.
 
     
-    * Open `index.js` file.
-    * At line 1 where you find:
+    * Navigate to the `js` folder within the `finder` folder and open the `index.js` file.
+    * One the first line where you find:
     ```JS
-    const localEndpoint = "http://localhost:7200/repositories/ent_ontology"
+    const localEndpoint = "http://localhost:7200/repositories/finder"
     ```
-    replace `http://localhost:7200/repositories/ent_ontology` with your repository URL.
+    replace `http://localhost:7200/repositories/finder` with the URL of the repository you created in GraphDB .
     
-4. Upload the file `ent_ontology.ttl` into your repository you just created.
+4. Upload the file `finder.ttl` into the repository you just created.
   
-5. Navigate to the root folder of the project.
+5. On the command line, navigate to the `finder` folder of the project.
   
 6. Run the following command in the terminal
 ```sh
 start index.html
 ```
+7. As an alternative to the last two steps, simply open the `finder/index.html` file in a web browser, preferably Google Chrome.
     
 
 
