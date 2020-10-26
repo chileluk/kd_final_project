@@ -15,7 +15,7 @@
   <h1 align="center">Entertainment Finder</h1>
 
   <p align="center">
-    A manual on how to run the Entertainment Finder Web Application.
+    Instructions on how to run the Entertainment Finder Web Application.
     <br />
     <a href="https://github.com/chileluk/kd_final_project"><strong>Explore the Docs »</strong></a>
     <br />
@@ -53,19 +53,19 @@
 [![Product Name Screen Shot][product-screenshot]]()
 
 Entertainment Finder is a simple web application that lets you find the entertainment of your choice. In Entertainment finder you can search for Movies, TV series and Books and 
-fine tune your search criteria in order to find a perfect entertainment that match your taste.
+fine tune your search criteria in order to find entertainment that perfectly matches your taste.
 
-Here are some of the criteria you can apply to fine tune your search for a perfect entertainment:
+Here are some of the criteria you can apply to fine tune your search for a perfect entertainment recommendation:
 
-* Entertainment category. This has three oprions which are TV Series, Movies and Books.
-* Genres which are Comedy,
+* Entertainment category. This has three options, which are TV Series, Movies and Books.
+* Genres for these options include Comedy,
 	History, Sci-Fi, Romance, Thriller, Action, Horror, Crime, Fantasy, Biography, Drama, Mystery, Sport, Adventure, Animation, Family, Documentary and Technology for TV Series and Mobies and Dark Comedy, Historical Novel, Science Fiction, Romance Novel, Novel, Spy Novel, Horror Fiction, Crime Fiction, Fantasy, Autobiography, Detective Fiction, Mystery Fiction, Young Adult Fiction, Adventure Novel, Memoir, Urban Fantasy, Fiction and Non Fiction for Books.
-* For Movies and TV shows you have additonal options to choose like runtime, rating, platform, relese year, awards won and language for the Books you can additionally choose the release year and maximum page numbers.
+* For Movies and TV shows you have additonal options to choose like runtime, rating, streaming platform, relese year, awards won and language for the Books you can additionally choose the release year and maximum page numbers.
 
 
 
 ### Built With
-These are the main technologies and frameworks used for this project.
+These are the main technologies and frameworks used for this project:
 * [Bootstrap](https://getbootstrap.com)
 * [JQuery](https://jquery.com)
 * [ECMAScript](http://ecma-international.org)
@@ -78,7 +78,7 @@ These are the main technologies and frameworks used for this project.
 ## Getting Started
 
 
-To get a local copy up and running follow these simple example steps.
+To get a local copy up and running follow these simple steps:
 
 ### Prerequisites
 
@@ -97,7 +97,7 @@ git clone https://github.com/chileluk/kd_final_project.git
 
 2. Create a repository in GraphDB and give it the id `finder`. Select the OWL Max(Optimized) ruleset.
 
-3. Make this your default repository in GraphDB. (After following these steps you do not need to configure repository URL in the code since it will automatically be set as `http://localhost:7200/repositories/finder` and it will be accessesed by the application). However, in case of issues or if your triplestore has a different IP address than your local machine you will need to set the value of the `localEndpoint` variable in the app files to the exact url of your repository as follows:
+3. Make this your default repository in GraphDB. (After following these steps you do not need to configure therepository URL in the code since it will automatically be set as `http://localhost:7200/repositories/finder` and it will be accessible to the application). However, in case of issues or if your triplestore has a different IP address than your local machine you will need to set the value of the `localEndpoint` variable in the app files to the exact url of your repository as follows:
 
     
     * Navigate to the `js` folder within the `finder` folder and open the `index.js` file.
